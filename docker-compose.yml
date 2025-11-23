@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aiw-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for hot reload
+      - ./backend:/app
+      # Mount data and models (shared)
+      - ./data:/app/data
+      - ./backend/models:/app/models
+      # Mount scripts for easy access
+      - ./scripts:/scripts
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=development
+      - PYTHONUNBUFFERED=1
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-delay 2
+    networks:
+      - aiw-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aiw-frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend:/app
+      # Mount data (shared with backend)
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8000
+      - STREAMLIT_SERVER_FILE_WATCHER_TYPE=poll
+      - STREAMLIT_SERVER_HEADLESS=true
+    depends_on:
+      - backend
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0 --server.fileWatcherType=poll --server.runOnSave=true
+    networks:
+      - aiw-network
+    restart: unless-stopped
+
+networks:
+  aiw-network:
+    driver: bridge
