@@ -184,9 +184,23 @@ def generate_claims(policies_df):
         else:
             loss_date = effective_date
 
-        # Report date (0-90 days after loss)
-        report_lag = np.random.randint(0, 91)
+        # Report date - stratified by accident year for realistic development patterns
+        accident_year = loss_date.year
+        if accident_year == 2022:
+            # Mature claims: 14-22 months development
+            report_lag = np.random.randint(420, 660)  # 14-22 months in days
+        elif accident_year == 2023:
+            # Developing claims: 4-10 months development (active development zone)
+            report_lag = np.random.randint(120, 300)  # 4-10 months in days
+        else:  # 2024
+            # Recent claims: 0-4 months development
+            report_lag = np.random.randint(0, 120)  # 0-4 months in days
+
         report_date = loss_date + timedelta(days=report_lag)
+
+        # Cap report date at END_DATE to keep data realistic
+        if report_date > END_DATE:
+            report_date = END_DATE
 
         # Claim severity based on risk rating and policy size
         risk_factor = policy['RiskRating'] / 5.0  # Normalize
@@ -296,9 +310,11 @@ def main():
 
     # Save to CSV
     print("\nSaving datasets...")
-    policies_df.to_csv('../data/policies.csv', index=False)
-    claims_df.to_csv('../data/claims.csv', index=False)
-    exposure_df.to_csv('../data/exposure.csv', index=False)
+    # Use absolute path to ensure files are written to mounted volume
+    data_dir = '/app/data' if os.path.exists('/app/data') else '../data'
+    policies_df.to_csv(f'{data_dir}/policies.csv', index=False)
+    claims_df.to_csv(f'{data_dir}/claims.csv', index=False)
+    exposure_df.to_csv(f'{data_dir}/exposure.csv', index=False)
 
     # Print summary statistics
     print("\n" + "=" * 60)

@@ -98,30 +98,36 @@ This will:
 - **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
-### First-Time Setup
+### First-Time Setup: Train ML Models
 
-After starting the services, you need to train the ML models:
+**IMPORTANT**: After starting the services, you must train the ML models for predictions to work. Without trained models, the application will fall back to static rules.
 
-1. **Enter the backend container**
 ```bash
-docker exec -it aiw-backend bash
-```
+# Train both Loss Ratio and Severity models
+docker exec aiw-backend bash -c "cd .. && python scripts/train_models.py"
 
-2. **Train the models**
-```bash
-cd /app
-python -c "import sys; sys.path.insert(0, '..'); exec(open('../scripts/train_models.py').read())"
-```
-
-3. **Verify models are created**
-```bash
-ls -la models/
-# Should see: lr_model.pkl and severity_model.pkl
-```
-
-4. **Restart the backend** to load models
-```bash
+# Restart backend to load the trained models
 docker-compose restart backend
+
+# Verify models loaded successfully
+docker logs aiw-backend | grep "Loaded"
+# Should see: "Loaded Loss Ratio model" and "Loaded Severity model"
+```
+
+**What this does:**
+- Trains LightGBM models on 1,000 policies and 114 claims
+- Creates `backend/models/lr_model.pkl` (Loss Ratio model, ~130 KB)
+- Creates `backend/models/severity_model.pkl` (Severity model, ~47 KB)
+- Models persist via Docker volume mount
+
+**Model Performance:**
+- Loss Ratio Model: MAE 78.81, trained on 800 samples
+- Severity Model: MAE $131,291, trained on 86 policies with claims
+
+**Verify it worked:**
+```bash
+curl http://localhost:8000/health
+# Should return: {"status":"healthy","data_loaded":true,"model_loaded":true}
 ```
 
 ## 📊 Data
@@ -257,9 +263,71 @@ Full API documentation available at: http://localhost:8000/docs
 
 Run unit tests:
 ```bash
+# Inside Docker
+docker exec aiw-backend pytest tests/ -v --cov=services
+
+# Or locally
 cd backend
 pytest tests/ -v --cov=services
 ```
+
+## 🐛 Troubleshooting
+
+### Models Not Loading / Falling Back to Static Rules
+
+**Symptom**: Predictions always return fixed values (Loss Ratio: 65%, Severity: policy-size based)
+
+**Solution**:
+```bash
+# Train the models
+docker exec aiw-backend bash -c "cd .. && python scripts/train_models.py"
+
+# Restart backend
+docker-compose restart backend
+
+# Verify models loaded
+docker logs aiw-backend | grep "Loaded"
+```
+
+**Root Cause**: ML models must be trained after first setup. The training script was fixed to handle a column merge conflict that previously prevented training.
+
+### Backend Connection Errors
+
+**Symptom**: Frontend shows "Connection refused" or "Cannot connect to backend"
+
+**Solution**:
+```bash
+# Check backend is running
+docker ps | grep aiw-backend
+
+# Check backend logs for errors
+docker logs aiw-backend --tail 50
+
+# Restart backend
+docker-compose restart backend
+```
+
+### Port Already in Use
+
+**Symptom**: "Address already in use" error on ports 8000 or 8501
+
+**Solution**:
+```bash
+# Find process using the port
+lsof -i :8000  # or :8501
+
+# Stop the process or use different ports in docker-compose.yml
+```
+
+### GenAI Features Not Working
+
+**Symptom**: GenAI Insights tab shows errors or timeouts
+
+**Solution**:
+- Verify `OPENAI_API_KEY` is set in `.env` file
+- Check API key is valid at https://platform.openai.com/api-keys
+- Ensure you have API credits available
+- Note: GenAI has 30s timeout (normal for API calls)
 
 ## 🔒 Security Notes
 

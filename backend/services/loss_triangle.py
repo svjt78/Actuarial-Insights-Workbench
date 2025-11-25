@@ -198,7 +198,19 @@ class LossTriangleCalculator:
             # Get latest reported value (rightmost non-zero value)
             row = triangle.loc[accident_year]
             reported = row[row > 0].iloc[-1] if (row > 0).any() else 0
-            latest_dev = row[row > 0].index[-1] if (row > 0).any() else 0
+
+            # Find latest development month where value actually increased
+            # (not just carried forward from cumsum)
+            latest_dev = 0
+            if (row > 0).any():
+                prev_val = 0
+                for idx in row.index:
+                    if row[idx] > prev_val:
+                        latest_dev = idx
+                        prev_val = row[idx]
+                # If no increase found, use last non-zero
+                if latest_dev == 0:
+                    latest_dev = row[row > 0].index[-1]
 
             # Calculate ultimate using remaining development factors
             ultimate = reported
@@ -232,11 +244,15 @@ class LossTriangleCalculator:
         triangle_cumulative = self.get_triangle_by_accident_year(value_col, 'cumulative')
         triangle_incremental = self.get_triangle_by_accident_year(value_col, 'incremental')
 
-        # Calculate development factors
+        # Calculate development factors (needs numeric index)
         dev_factors = self.calculate_development_factors(triangle_cumulative)
 
-        # Project ultimate losses
+        # Project ultimate losses (needs numeric index)
         ultimate_df = self.get_ultimate_losses(triangle_cumulative, dev_factors)
+
+        # Convert index to string AFTER calculations to preserve year format in JSON serialization
+        triangle_cumulative.index = triangle_cumulative.index.astype(str)
+        triangle_incremental.index = triangle_incremental.index.astype(str)
 
         return {
             'cumulative_triangle': triangle_cumulative.to_dict(),

@@ -44,8 +44,12 @@ def prepare_training_data():
 
     claims_agg.columns = ['PolicyID', 'TotalIncurred', 'ClaimCount']
 
+    # Drop ExposureUnits from policies to avoid column name conflict during merge
+    # We'll use the aggregated ExposureUnits from exposure data
+    policies_for_merge = policies_df.drop(columns=['ExposureUnits'])
+
     # Merge policy data with exposure and claims
-    training_df = policies_df.merge(exposure_agg, on='PolicyID', how='left')
+    training_df = policies_for_merge.merge(exposure_agg, on='PolicyID', how='left')
     training_df = training_df.merge(claims_agg, on='PolicyID', how='left')
 
     # Fill NaN for policies with no claims
@@ -243,17 +247,17 @@ def main():
     print("="*60)
     print()
 
-    # Create models directory
-    os.makedirs('../backend/models', exist_ok=True)
-
     # Load and prepare data
     training_df = prepare_training_data()
 
     # Train Loss Ratio model
     lr_model = train_loss_ratio_model(training_df)
 
-    # Save model
-    lr_model_path = '../backend/models/lr_model.pkl'
+    # Save model (use /app/models when running in Docker, ../backend/models for local)
+    models_dir = '/app/models' if os.path.exists('/app/models') else '../backend/models'
+    os.makedirs(models_dir, exist_ok=True)
+
+    lr_model_path = os.path.join(models_dir, 'lr_model.pkl')
     joblib.dump(lr_model, lr_model_path)
     print(f"\n✅ Loss Ratio model saved to {lr_model_path}")
 
@@ -261,7 +265,7 @@ def main():
     severity_model = train_severity_model(training_df)
 
     # Save model
-    severity_model_path = '../backend/models/severity_model.pkl'
+    severity_model_path = os.path.join(models_dir, 'severity_model.pkl')
     joblib.dump(severity_model, severity_model_path)
     print(f"\n✅ Severity model saved to {severity_model_path}")
 

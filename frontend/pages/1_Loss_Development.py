@@ -149,6 +149,7 @@ if 'triangle_data' in st.session_state and st.session_state['triangle_data']:
             title=f"{triangle_type.capitalize()} Loss Triangle by Accident Year",
             xaxis_title="Development Month",
             yaxis_title="Accident Year",
+            yaxis=dict(type='category'),
             height=400,
             font=dict(size=12)
         )
@@ -191,7 +192,8 @@ if 'triangle_data' in st.session_state and st.session_state['triangle_data']:
 
         fig_factors.update_layout(
             yaxis_title="Development Factor",
-            xaxis_title="Development Period",
+            xaxis_title="Development Period (Months)",
+            xaxis=dict(type='category'),
             height=300
         )
 
@@ -207,6 +209,9 @@ if 'triangle_data' in st.session_state and st.session_state['triangle_data']:
     if ultimate_data:
         df_ultimate = pd.DataFrame(ultimate_data)
 
+        # Convert AccidentYear to string to prevent comma formatting
+        df_ultimate['AccidentYear'] = df_ultimate['AccidentYear'].astype(str)
+
         # Format columns
         df_ultimate['ReportedLoss'] = df_ultimate['ReportedLoss'].apply(lambda x: f"${x:,.0f}")
         df_ultimate['UltimateLoss'] = df_ultimate['UltimateLoss'].apply(lambda x: f"${x:,.0f}")
@@ -218,6 +223,9 @@ if 'triangle_data' in st.session_state and st.session_state['triangle_data']:
         # Visualize maturity
         df_vis = pd.DataFrame(ultimate_data)
 
+        # Convert AccidentYear to string for proper categorical display
+        df_vis['AccidentYear'] = df_vis['AccidentYear'].astype(str)
+
         fig_maturity = px.bar(
             df_vis,
             x='AccidentYear',
@@ -228,7 +236,10 @@ if 'triangle_data' in st.session_state and st.session_state['triangle_data']:
             color_continuous_scale='RdYlGn'
         )
 
-        fig_maturity.update_layout(height=300)
+        fig_maturity.update_layout(
+            height=300,
+            xaxis={'type': 'category'}  # Force categorical axis
+        )
 
         st.plotly_chart(fig_maturity, use_container_width=True)
 
