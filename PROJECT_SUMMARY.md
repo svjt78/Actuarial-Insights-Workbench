@@ -211,7 +211,7 @@ cp .env.example .env
 docker-compose up --build
 
 # 3. Access frontend
-open http://localhost:8501
+open http://localhost:8502
 
 # 4. Train models (in new terminal)
 docker exec -it aiw-backend bash

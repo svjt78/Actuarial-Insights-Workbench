@@ -21,8 +21,8 @@ docker-compose restart backend
 ```
 
 ### Step 4: Access Application
-- **Frontend**: http://localhost:8501
-- **API Docs**: http://localhost:8000/docs
+- **Frontend**: http://localhost:8502
+- **API Docs**: http://localhost:8003/docs
 
 ---
 

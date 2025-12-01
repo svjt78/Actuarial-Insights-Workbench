@@ -37,8 +37,8 @@ Your development environment is configured for **instant hot reload**. Code chan
 docker-compose up --build
 
 # Wait for both services to start
-# Backend: http://localhost:8000
-# Frontend: http://localhost:8501
+# Backend: http://localhost:8003
+# Frontend: http://localhost:8502
 ```
 
 ### Daily Development Workflow
@@ -88,7 +88,7 @@ async def test_endpoint():
     return {"message": "Hello from hot reload!"}  # <- Change this
 
 # Save file
-# Check http://localhost:8000/test immediately - no restart needed!
+# Check http://localhost:8003/test immediately - no restart needed!
 ```
 
 ### Example 2: Update Frontend UI
@@ -120,7 +120,7 @@ def predict_loss_ratio(self, input_data: Dict) -> Dict:
 
 1. **Keep containers running** - Don't stop/start unnecessarily
 2. **Edit one file at a time** - Reduces reload cycles
-3. **Use backend API directly** - Test at http://localhost:8000/docs
+3. **Use backend API directly** - Test at http://localhost:8003/docs
 4. **Monitor logs** - Watch reload status
 
 ### Viewing Logs
@@ -148,13 +148,13 @@ docker-compose logs --tail=50
 **Backend - Increase reload delay:**
 ```yaml
 # docker-compose.yml
-command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-delay 5
+command: uvicorn main:app --host 0.0.0.0 --port 8003 --reload --reload-delay 5
 ```
 
 **Frontend - Disable auto-rerun:**
 ```yaml
 # docker-compose.yml
-command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0 --server.fileWatcherType=poll
+command: streamlit run app.py --server.port=8502 --server.address=0.0.0.0 --server.fileWatcherType=poll
 # Remove: --server.runOnSave=true
 ```
 
@@ -260,7 +260,7 @@ docker-compose up --build
 ## 💡 Pro Tips
 
 ### 1. Use API Docs for Backend Testing
-- Visit http://localhost:8000/docs
+- Visit http://localhost:8003/docs
 - Test endpoints directly
 - Faster than testing through frontend
 

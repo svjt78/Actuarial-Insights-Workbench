@@ -16,7 +16,7 @@ st.set_page_config(page_title="Loss Development", page_icon="📈", layout="wide
 
 # Get backend URL
 BACKEND_URL = os.getenv('BACKEND_HOST', 'localhost')
-BACKEND_PORT = os.getenv('BACKEND_PORT', '8000')
+BACKEND_PORT = os.getenv('BACKEND_PORT', '8003')
 API_BASE_URL = f"http://{BACKEND_URL}:{BACKEND_PORT}"
 
 st.title("📈 Loss Development Dashboard")

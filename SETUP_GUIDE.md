@@ -13,7 +13,7 @@ cp .env.example .env
 ```env
 OPENAI_API_KEY=sk-your-api-key-here
 BACKEND_HOST=backend
-BACKEND_PORT=8000
+BACKEND_PORT=8003
 ENVIRONMENT=development
 ```
 
@@ -27,9 +27,9 @@ Wait for both services to start (approximately 2-3 minutes).
 
 ### Step 3: Access Application
 
-- **Frontend (Streamlit)**: http://localhost:8501
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
+- **Frontend (Streamlit)**: http://localhost:8502
+- **Backend API**: http://localhost:8003
+- **API Documentation**: http://localhost:8003/docs
 
 ### Step 4: Train ML Models
 
@@ -52,7 +52,7 @@ docker-compose restart backend
 
 ### Step 5: Verify Setup
 
-1. Go to http://localhost:8501
+1. Go to http://localhost:8502
 2. Navigate to "Risk Prediction" page
 3. Click "Predict Both" to test ML models
 4. Navigate to "GenAI Insights" and ask a question
@@ -107,13 +107,13 @@ cd ..
 4. **Start backend** (terminal 1):
 ```bash
 cd backend
-uvicorn main:app --reload --port 8000
+uvicorn main:app --reload --port 8003
 ```
 
 5. **Start frontend** (terminal 2):
 ```bash
 cd frontend
-streamlit run app.py --server.port 8501
+streamlit run app.py --server.port 8502
 ```
 
 ---
@@ -125,7 +125,7 @@ streamlit run app.py --server.port 8501
 **Solution:**
 - Verify backend is running: `docker ps`
 - Check logs: `docker logs aiw-backend`
-- Ensure port 8000 is not in use
+- Ensure port 8003 is not in use
 
 ### Issue: "OpenAI API key not configured"
 
@@ -148,8 +148,8 @@ streamlit run app.py --server.port 8501
 - Change ports in `docker-compose.yml`:
   ```yaml
   ports:
-    - "8001:8000"  # Backend
-    - "8502:8501"  # Frontend
+    - "8004:8003"  # Backend
+    - "8503:8502"  # Frontend
   ```
 
 ### Issue: Docker build fails
@@ -282,7 +282,7 @@ Coverage: 85%
 - **README**: [README.md](README.md)
 - **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Vision**: [VISION.md](VISION.md)
-- **API Docs**: http://localhost:8000/docs
+- **API Docs**: http://localhost:8003/docs
 
 ### Common Questions:
 

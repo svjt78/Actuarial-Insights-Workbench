@@ -110,7 +110,7 @@ docker-compose restart backend
 docker logs aiw-backend | grep "Loaded"
 
 # Test health endpoint
-curl http://localhost:8000/health
+curl http://localhost:8003/health
 ```
 
 ### Model Performance Metrics

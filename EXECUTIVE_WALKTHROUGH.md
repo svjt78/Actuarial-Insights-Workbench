@@ -510,7 +510,7 @@ For detailed technical questions, actuarial methodology, or implementation suppo
 **Platform Documentation:**
 - Technical Guide: See `README.md`
 - Setup Instructions: See `SETUP_GUIDE.md`
-- API Documentation: http://localhost:8000/docs
+- API Documentation: http://localhost:8003/docs
 
 ---
 

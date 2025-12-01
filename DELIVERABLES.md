@@ -554,12 +554,12 @@ pytest backend/tests/ -v --cov=services
 - **Services:** 2 microservices
 - **Backend Service:**
   - Container: aiw-backend
-  - Port: 8000
+  - Port: 8003
   - Volumes: data, models
   - Auto-reload enabled
 - **Frontend Service:**
   - Container: aiw-frontend
-  - Port: 8501
+  - Port: 8502
   - Depends on: backend
   - Auto-reload enabled
 - **Network:** aiw-network (bridge driver)
@@ -569,7 +569,7 @@ pytest backend/tests/ -v --cov=services
 - System dependencies: gcc, g++
 - Python dependencies from requirements.txt
 - Working directory: /app
-- Port: 8000
+- Port: 8003
 - Command: uvicorn with auto-reload
 
 #### 3. Frontend Dockerfile (`frontend/Dockerfile`)
@@ -577,7 +577,7 @@ pytest backend/tests/ -v --cov=services
 - System dependencies: gcc
 - Python dependencies from requirements.txt
 - Working directory: /app
-- Port: 8501
+- Port: 8502
 - Command: streamlit run
 
 ### Environment Configuration ✅
@@ -588,7 +588,7 @@ pytest backend/tests/ -v --cov=services
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
 BACKEND_HOST=backend
-BACKEND_PORT=8000
+BACKEND_PORT=8003
 ENVIRONMENT=development
 ```
 
@@ -906,7 +906,7 @@ ipykernel==6.29.0
 - **GitHub:** (Repository URL to be added)
 - **Quick Start:** QUICKSTART.md
 - **Setup Guide:** SETUP_GUIDE.md
-- **API Docs:** http://localhost:8000/docs
+- **API Docs:** http://localhost:8003/docs
 
 ### Support Channels
 - Documentation (8 files included)

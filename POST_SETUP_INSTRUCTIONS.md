@@ -150,7 +150,7 @@ docker exec aiw-backend ls -la /app/models/
 
 ### Check Backend Health:
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8003/health
 ```
 
 Expected response:
@@ -163,7 +163,7 @@ Expected response:
 ```
 
 ### Check Frontend:
-1. Go to http://localhost:8501
+1. Go to http://localhost:8502
 2. Navigate to "Risk Prediction" page
 3. Enter any policy details
 4. Click "Predict Both"
@@ -261,9 +261,9 @@ Use this checklist to ensure everything is configured:
 - [ ] ML models trained (`backend/models/*.pkl` exist)
 - [ ] Backend restarted after model training
 - [ ] Health check passes (model_loaded: true)
-- [ ] Frontend accessible at http://localhost:8501
-- [ ] Backend accessible at http://localhost:8000
-- [ ] API docs accessible at http://localhost:8000/docs
+- [ ] Frontend accessible at http://localhost:8502
+- [ ] Backend accessible at http://localhost:8003
+- [ ] API docs accessible at http://localhost:8003/docs
 - [ ] GenAI Insights page works (no API errors)
 - [ ] Risk Prediction page shows ML predictions (not fallback)
 - [ ] All 4 dashboard pages load without errors
